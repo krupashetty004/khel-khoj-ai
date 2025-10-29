@@ -22,8 +22,7 @@ const sampleAthletes: Player[] = [
     name: "Mira Khan",
     sport: "Badminton",
     country: "India",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1521417531039-94d1d6e25086?q=80&w=800&auto=format&fit=crop",
+    avatarUrl: "https://picsum.photos/seed/mira/800/800",
     description:
       "An agile shuttler with explosive footwork and control at the net, Mira thrives in high-tempo rallies.",
     stats: [
@@ -38,8 +37,7 @@ const sampleAthletes: Player[] = [
     sport: "Football",
     team: "Bengal Blaze",
     country: "India",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=800&auto=format&fit=crop",
+    avatarUrl: "https://picsum.photos/seed/kabir/800/800",
     description:
       "A creative forward known for his link-up play, off-the-ball movement, and clutch finishing in the box.",
     stats: [
