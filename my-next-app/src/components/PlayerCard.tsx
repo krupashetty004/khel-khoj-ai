@@ -10,6 +10,7 @@ export type Player = {
   team?: string;
   country?: string;
   avatarUrl?: string;
+  description?: string;
   stats?: Array<{ label: string; value: string | number }>;
 };
 
@@ -63,6 +64,12 @@ export function PlayerCard({ player, onClick }: PlayerCardProps) {
           <p className="mt-0.5 line-clamp-2 text-sm text-gray-600 dark:text-gray-300">
             {[player.team, player.country].filter(Boolean).join(" • ") || "—"}
           </p>
+
+          {player.description && (
+            <p className="mt-3 line-clamp-3 text-sm text-gray-700 dark:text-gray-200">
+              {player.description}
+            </p>
+          )}
 
           {player.stats && player.stats.length > 0 && (
             <dl className="mt-3 grid grid-cols-3 gap-2">

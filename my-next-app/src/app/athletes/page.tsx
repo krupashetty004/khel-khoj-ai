@@ -3,14 +3,18 @@ import PlayerCard, { Player } from "@/components/PlayerCard";
 const sampleAthletes: Player[] = [
   {
     id: "1",
-    name: "Aarav Patel",
+    name: "Virat Kohli",
     sport: "Cricket",
-    team: "Mumbai Mavericks",
+    team: "India National Team",
     country: "India",
+    avatarUrl:
+      "https://i.pinimg.com/736x/27/59/2a/27592a992de78e5c39c678a78c34cce3.jpg",
+    description:
+      "Renowned for his sharp focus and precise timing, Virat displays exceptional batting consistency and leadership on the field.",
     stats: [
-      { label: "Matches", value: 72 },
-      { label: "Avg", value: 48.2 },
-      { label: "SR", value: 136 },
+      { label: "Matches", value: 510 },
+      { label: "Avg", value: 57.3 },
+      { label: "SR", value: 93 },
     ],
   },
   {
@@ -18,6 +22,10 @@ const sampleAthletes: Player[] = [
     name: "Mira Khan",
     sport: "Badminton",
     country: "India",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1521417531039-94d1d6e25086?q=80&w=800&auto=format&fit=crop",
+    description:
+      "An agile shuttler with explosive footwork and control at the net, Mira thrives in high-tempo rallies.",
     stats: [
       { label: "Titles", value: 8 },
       { label: "Rank", value: 6 },
@@ -30,6 +38,10 @@ const sampleAthletes: Player[] = [
     sport: "Football",
     team: "Bengal Blaze",
     country: "India",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=800&auto=format&fit=crop",
+    description:
+      "A creative forward known for his link-up play, off-the-ball movement, and clutch finishing in the box.",
     stats: [
       { label: "Apps", value: 54 },
       { label: "Goals", value: 19 },
