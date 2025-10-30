@@ -30,8 +30,8 @@ export function PlayerCard({ player, onClick }: PlayerCardProps) {
       onClick={handleClick}
       className="group w-full text-left rounded-xl border border-gray-200 bg-white/70 p-4 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800 dark:bg-gray-900/60"
     >
-      <div className="flex items-start gap-4">
-        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg ring-1 ring-gray-200 dark:ring-gray-800">
+      <div className="flex items-start gap-5">
+        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl ring-1 ring-gray-200 dark:ring-gray-800 sm:h-28 sm:w-28">
           {player.avatarUrl ? (
             <Image
               src={player.avatarUrl}

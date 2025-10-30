@@ -46,6 +46,50 @@ const sampleAthletes: Player[] = [
       { label: "Assists", value: 12 },
     ],
   },
+  {
+    id: "4",
+    name: "Neha Sharma",
+    sport: "Hockey",
+    team: "Delhi Dynamos",
+    country: "India",
+    avatarUrl: "https://picsum.photos/seed/neha/900/900",
+    description:
+      "Midfield engine with tireless work-rate, precise stick skills, and sharp distribution under pressure.",
+    stats: [
+      { label: "Caps", value: 61 },
+      { label: "Assists", value: 21 },
+      { label: "Goals", value: 9 },
+    ],
+  },
+  {
+    id: "5",
+    name: "Rohan Desai",
+    sport: "Tennis",
+    country: "India",
+    avatarUrl: "https://picsum.photos/seed/rohan/900/900",
+    description:
+      "Baseline strategist with a heavy topspin forehand and reliable return game on hard courts.",
+    stats: [
+      { label: "Titles", value: 3 },
+      { label: "Rank", value: 58 },
+      { label: "Win%", value: "61%" },
+    ],
+  },
+  {
+    id: "6",
+    name: "Sana Iqbal",
+    sport: "Basketball",
+    team: "Hyderabad Hawks",
+    country: "India",
+    avatarUrl: "https://picsum.photos/seed/sana/900/900",
+    description:
+      "Versatile wing with elite defensive instincts, transition speed, and a smooth catch-and-shoot three.",
+    stats: [
+      { label: "PPG", value: 18.4 },
+      { label: "RPG", value: 7.1 },
+      { label: "APG", value: 4.3 },
+    ],
+  },
 ];
 
 export default function AthletesPage() {
