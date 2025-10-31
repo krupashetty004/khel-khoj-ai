@@ -13,7 +13,8 @@ The system uses computer vision and generative AI to analyze uploaded videos of 
 
 **Goal:** Build the foundation for the full-stack project, starting from frontend basics to React and Next.js setup.  
 
-📺 **Phase 0 Demo:** [Watch on YouTube](https://youtu.be/z42sB5U2uBs)  
+📺 **Phase 0 Demo:** [Watch on YouTube](https://youtu.be/z42sB5U2uBs)
+📺 **Phase 0 Complition:** [Watch on YouTube](https://youtube.com/watch?v=G9LwZTewilo&feature=shared)
 
 ---
 
