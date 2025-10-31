@@ -19,40 +19,40 @@ const sampleAthletes: Player[] = [
   },
   {
     id: "2",
-    name: "Mira Khan",
-    sport: "Badminton",
+    name: "Mira bhai chanu",
+    sport: "Weightlifting",
     country: "India",
-    avatarUrl: "https://picsum.photos/seed/mira/800/800",
+    avatarUrl: "https://i.pinimg.com/736x/41/81/ca/4181cafcc294ece24407b8c4bd624fd4.jpg",
     description:
-      "An agile shuttler with explosive footwork and control at the net, Mira thrives in high-tempo rallies.",
+      "Mira bhai chanu is a weightlifting athlete from India. She has won multiple medals at the Olympics and World Championships.",
     stats: [
-      { label: "Titles", value: 8 },
-      { label: "Rank", value: 6 },
-      { label: "Win%", value: "68%" },
+      { label: "Weight", value: 80 },
+      { label: "Height", value: 1.80 },
+      { label: "Body Mass Index", value: "25.0" },
     ],
   },
   {
     id: "3",
-    name: "Kabir Singh",
+    name: "SUNIL CHETTRI",
     sport: "Football",
     team: "Bengal Blaze",
     country: "India",
-    avatarUrl: "https://picsum.photos/seed/kabir/800/800",
+    avatarUrl: "https://i.pinimg.com/736x/7d/96/37/7d9637c5ba72fdcd41bc22e4ada9033a.jpg",
     description:
-      "A creative forward known for his link-up play, off-the-ball movement, and clutch finishing in the box.",
+      "Sunil Chettri is a football player from India. He has won multiple awards and has been named the best player of the year in 2011.",
     stats: [
-      { label: "Apps", value: 54 },
-      { label: "Goals", value: 19 },
-      { label: "Assists", value: 12 },
+      { label: "Matches", value: 510 },
+      { label: "Goals", value: 57.3 },
+      { label: "Assists", value: 93 },
     ],
   },
   {
     id: "4",
-    name: "Neha Sharma",
+    name: "Ritu Rani",
     sport: "Hockey",
     team: "Delhi Dynamos",
     country: "India",
-    avatarUrl: "https://picsum.photos/seed/neha/900/900",
+    avatarUrl: "https://i.pinimg.com/736x/be/7b/2b/be7b2b2846c5eaf277f6a0f52cd083d9.jpg",
     description:
       "Midfield engine with tireless work-rate, precise stick skills, and sharp distribution under pressure.",
     stats: [
@@ -63,16 +63,16 @@ const sampleAthletes: Player[] = [
   },
   {
     id: "5",
-    name: "Rohan Desai",
-    sport: "Tennis",
+    name: "Nitesh Kumar",
+    sport: "Kabbadi",
     country: "India",
-    avatarUrl: "https://picsum.photos/seed/rohan/900/900",
+    avatarUrl: "https://i.pinimg.com/736x/bf/e4/00/bfe40089af32452f22ca9fd4ca467caa.jpg",
     description:
-      "Baseline strategist with a heavy topspin forehand and reliable return game on hard courts.",
+      "Nitesh Kumar is a kabbadi player from India. He has won multiple awards and has been named the best player of the year in 2011.",
     stats: [
-      { label: "Titles", value: 3 },
-      { label: "Rank", value: 58 },
-      { label: "Win%", value: "61%" },
+      { label: "Matches", value: 510 },
+      { label: "Goals", value: 57.3 },
+      { label: "Assists", value: 93 },
     ],
   },
   {
@@ -81,7 +81,7 @@ const sampleAthletes: Player[] = [
     sport: "Basketball",
     team: "Hyderabad Hawks",
     country: "India",
-    avatarUrl: "https://picsum.photos/seed/sana/900/900",
+    avatarUrl: "https://i.pinimg.com/736x/28/bd/9c/28bd9c48a94a54bf043f910105b6b1b4.jpg",
     description:
       "Versatile wing with elite defensive instincts, transition speed, and a smooth catch-and-shoot three.",
     stats: [
@@ -90,6 +90,74 @@ const sampleAthletes: Player[] = [
       { label: "APG", value: 4.3 },
     ],
   },
+  {
+    id: "7",
+    name: "PV Sindhu",
+    sport: "Badminton",
+    team: "India National Team",
+    country: "India",
+    avatarUrl:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHNjYy0F76arindzdpqqLUdA1j5bqAC_O_5A&s",
+    description:
+      " Indian badminton player. Considered as one of India's most successful athletes, Sindhu has won medals at tournaments such as the Olympic Games, the World Championships",
+    stats: [
+      { label: "Matches", value: 510 },
+      { label: "Avg", value: 57.3 },
+      { label: "SR", value: 93 },
+    ],
+  },
+
+  {
+    id: "8",
+    name: "Priya Punia",
+    sport: "Cricket",
+    team: "India National Team",
+    country: "India",
+    avatarUrl:
+      "https://i.pinimg.com/236x/6c/2d/bb/6c2dbb6c6c970a2617d9608824df5829.jpg",
+    description:
+      " Indian Cricket player. Considered as one of India's most successful athletes, Priya Punia has been actively participating in tournaments such as the Ranji Trophy, the World cup selections",
+    stats: [
+      { label: "Matches", value: 510 },
+      { label: "Avg", value: 57.3 },
+      { label: "SR", value: 93 },
+    ],
+  },
+
+  {
+    id: "9",
+    name: "Saina Nehwal",
+    sport: "Badminton",
+    team: "India National Team",
+    country: "India",
+    avatarUrl:
+      "https://i.pinimg.com/originals/5f/f1/e9/5ff1e993c79941cada03b45f07b4e99a.jpg",
+    description:
+      " Indian badminton player. Considered as one of India's most successful athletes, Nehwal has won medals at tournaments such as the Olympic Games, the World Championships",
+    stats: [
+      { label: "Matches", value: 510 },
+      { label: "Avg", value: 57.3 },
+      { label: "SR", value: 93 },
+    ],
+  },
+
+  {
+    id: "10",
+    name: "Harmeet Desai",
+    sport: "Table Tennis",
+    team: "India National Team",
+    country: "India",
+    avatarUrl:
+      "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcS4EC8zGkIm2tew3JK8glUJfz-NyHvHXsiR9PZJV8ZyUdz3lEzt",
+    description:
+      "Harmeet Desai is an Indian table tennis player known for his offensive and aggressive playing style. Hailing from Surat, Gujarat, he has won multiple international medals and was honored with the Arjuna Award in 2019",
+    stats: [
+      { label: "Matches", value: 510 },
+      { label: "Avg", value: 57.3 },
+      { label: "SR", value: 93 },
+    ],
+  },
+
 ];
 
 export default function AthletesPage() {
