@@ -35,14 +35,16 @@ Write-Host "Starting services in separate windows..." -ForegroundColor Yellow
 Write-Host ""
 
 # Start Celery Worker in new window
-Write-Host "📦 Starting Celery worker..." -ForegroundColor Cyan
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$scriptPath'; .\.venv\Scripts\Activate.ps1; Write-Host 'Celery Worker - Press Ctrl+C to stop' -ForegroundColor Green; celery -A tasks worker --loglevel=info"
+Write-Host "Starting Celery worker..." -ForegroundColor Cyan
+$celeryCmd = "cd '$scriptPath'; .\.venv\Scripts\Activate.ps1; Write-Host 'Celery Worker - Press Ctrl+C to stop' -ForegroundColor Green; celery -A tasks worker --loglevel=info"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", $celeryCmd
 
 Start-Sleep -Seconds 2
 
 # Start FastAPI in new window
-Write-Host "🚀 Starting FastAPI server..." -ForegroundColor Cyan
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$scriptPath'; .\.venv\Scripts\Activate.ps1; Write-Host 'FastAPI Server - Press Ctrl+C to stop' -ForegroundColor Green; Write-Host 'API Docs: http://127.0.0.1:8000/docs' -ForegroundColor Yellow; uvicorn main:app --reload --port 8000"
+Write-Host "Starting FastAPI server..." -ForegroundColor Cyan
+$fastapiCmd = "cd '$scriptPath'; .\.venv\Scripts\Activate.ps1; Write-Host 'FastAPI Server - Press Ctrl+C to stop' -ForegroundColor Green; Write-Host 'API Docs: http://127.0.0.1:8000/docs' -ForegroundColor Yellow; & .\.venv\Scripts\python.exe -m uvicorn main:app --reload --host 127.0.0.1 --port 8000"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", $fastapiCmd
 
 Start-Sleep -Seconds 2
 
