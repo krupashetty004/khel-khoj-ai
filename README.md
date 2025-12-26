@@ -7,6 +7,19 @@ This project integrates **Next.js**, **Node.js**, **FastAPI**, **MongoDB**, **Fi
 
 ---
 
+## 📚 Complete Project Guide
+
+**For a detailed, non-technical explanation of how everything works, see [PROJECT_GUIDE.md](./PROJECT_GUIDE.md)**
+
+This guide explains:
+- What each part of the system does (in simple terms)
+- How all components work together
+- Step-by-step instructions to run the project
+- How to use the video analysis pipeline
+- Troubleshooting common issues
+
+---
+
 ### Mandatory Core Requirements
 
 #### 1. Documentation
