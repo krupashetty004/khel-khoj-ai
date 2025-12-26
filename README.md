@@ -1,9 +1,5 @@
-# Khel-Khoj AI
-
-### Project Overview
-**Khel-Khoj AI (Game Search)** is an AI-powered platform designed to identify and analyze athletic talent in rural India.  
-Coaches can upload videos of athletes, and the system uses computer vision and generative AI to evaluate biomechanics, agility, and performance to generate detailed scouting reports.  
-This project integrates **Next.js**, **Node.js**, **FastAPI**, **MongoDB**, **Firebase**, **YOLO**, and **Gemini AI** to form a full-stack AI sports analysis platform.
+# Khel-Khoj AI  
+**AI-Powered Rural Sports Talent Identification Platform**  
 
 ---
 
@@ -17,6 +13,12 @@ This guide explains:
 - Step-by-step instructions to run the project
 - How to use the video analysis pipeline
 - Troubleshooting common issues
+
+---
+
+## 📘 Project Overview  
+**Khel-Khoj AI** is an AI-driven platform designed to identify and analyze hidden athletic talent in rural India.  
+The system uses computer vision and generative AI to analyze uploaded videos of athletes and generate insights on performance, agility, and biomechanics.  
 
 ---
 
@@ -43,30 +45,22 @@ At the completion of every major phase:
 
 ---
 
-### Weekly Progress Summary
+## 🚀 Phase 0: Full-Stack Foundations (Completed)  
 
-#### Week 1 (Oct 18 – Oct 25)
+**Goal:** Build the foundation for the full-stack project, starting from frontend basics to React and Next.js setup.  
 
-**Goal:** Complete *Phase 0: Full-Stack Foundations*
+📺 **Phase 0 Demo:** [Watch on YouTube](https://youtu.be/z42sB5U2uBs)
+📺 **Phase 0 Complition:** [Watch on YouTube](https://youtube.com/watch?v=G9LwZTewilo&feature=shared)
 
-**Completed Tasks:**
-- ✅ Installed core tools: **Python**, **Node.js**, **Git**, **Docker Desktop**, **VS Code**
-- ✅ Created GitHub repository **`khel-khoj-ai`**
-- ✅ Learned Git commands: `init`, `add`, `commit`, `push`, `branch`
-- ✅ Practiced branching (`main → dev`) and merging
-- ✅ Added and pushed `vision.md` describing how AI could help discover hidden rural sports talent
-- ✅ Created a static **“Player of the Week”** page using semantic HTML and CSS
-- ✅ Integrated **Tailwind CSS** for rapid, responsive UI design
-- ✅ Rebuilt the “Player of the Week” page using Tailwind and made it fully responsive
-- ✅ Updated featured athlete to **Virat Kohli**
+---
 
-**HTML Page Preview:**
-- Displays player image, name, sport, and description
-- Uses Tailwind CSS classes for responsive scaling
-- Centers content with adaptive spacing for all screen sizes
+## 🧠 Skills & Tools Learned  
+- Git branching and version control  
+- HTML5 and CSS3 structure  
+- Tailwind CSS responsive design  
+- React fundamentals (components, props, state)  
+- Next.js app setup with TypeScript  
+- Component-based design (PlayerCard and Athlete List)
 
-**Snippet:**
-```html
-<p class="mt-3 text-gray-700 text-sm sm:text-base leading-relaxed">
-  Renowned for his sharp focus and precise timing, Virat displays exceptional batting consistency and leadership on the field.
-</p>
+---
+
