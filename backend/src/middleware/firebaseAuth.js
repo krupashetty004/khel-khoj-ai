@@ -1,8 +1,11 @@
 const admin = require("firebase-admin");
 const fs = require("fs");
+const path = require("path");
 
-if (fs.existsSync("./serviceAccountKey.json")) {
-  const serviceAccount = require("./serviceAccountKey.json");
+const serviceAccountPath = path.join(__dirname, "../../serviceAccountKey.json");
+
+if (fs.existsSync(serviceAccountPath)) {
+  const serviceAccount = require(serviceAccountPath);
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
   });
