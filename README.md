@@ -96,7 +96,9 @@ Open:
 - Node health: `http://localhost:5000/health`
 - FastAPI health: `http://localhost:8000/health`
 
----
+- `PORT` → API port (default `5000`)
+- `MONGODB_URI` → MongoDB Atlas/local connection string
+- `FIREBASE_SERVICE_ACCOUNT_PATH` → path to Firebase Admin service account JSON
 
 ## Run with Docker Compose
 
