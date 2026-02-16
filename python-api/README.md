@@ -4,124 +4,70 @@ FastAPI service with Celery for background video analysis tasks.
 
 ## Prerequisites
 
-1. **Python 3.10+** installed
-2. **Redis** running (see options below)
-3. **Virtual environment** created
+1. Python 3.10+
+2. Redis running on `localhost:6379` (or custom URL)
+3. Virtual environment
 
 ## Setup
 
-### 1. Create Virtual Environment
+### 1) Create + activate virtual env
 
-```powershell
+```bash
 cd python-api
 python -m venv .venv
+source .venv/bin/activate
+# Windows PowerShell: .\.venv\Scripts\Activate.ps1
 ```
 
-### 2. Activate Virtual Environment
+### 2) Install dependencies
 
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-### 3. Install Dependencies
-
-```powershell
-python -m pip install --upgrade pip
-python -m pip install fastapi uvicorn celery[redis] redis ultralytics opencv-python transformers torch torchvision pillow matplotlib
-```
-
-### 4. Start Redis
-
-**Option A: Docker (Recommended)**
-```powershell
-# Make sure Docker Desktop is running first
-docker run -d --name redis-local -p 6379:6379 redis
-```
-
-**Option B: Windows Redis**
-- Download from: https://github.com/microsoftarchive/redis/releases
-- Extract and run `redis-server.exe`
-
-**Option C: WSL**
 ```bash
-wsl redis-server
+pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
-## Running Services
+### 3) Configure environment
 
-### Quick Start Scripts
+```bash
+cp .env.example .env
+```
 
-Run the setup check:
-```powershell
+Defaults:
+- `FASTAPI_HOST=127.0.0.1`
+- `FASTAPI_PORT=8000`
+- `CELERY_BROKER_URL=redis://localhost:6379/0`
+- `CELERY_RESULT_BACKEND=redis://localhost:6379/1`
+
+## Run services
+
+### Terminal 1 - FastAPI
+
+```bash
 cd python-api
-.\start_services.ps1
-```
-
-### Manual Start
-
-**Terminal 1 - Celery Worker:**
-```powershell
-cd python-api
-.\.venv\Scripts\Activate.ps1
-celery -A tasks worker --loglevel=info
-```
-
-Or use the script:
-```powershell
-.\start_celery.ps1
-```
-
-**Terminal 2 - FastAPI Server:**
-```powershell
-cd python-api
-.\.venv\Scripts\Activate.ps1
+source .venv/bin/activate
 uvicorn main:app --reload --port 8000
 ```
 
-Or use the script:
-```powershell
-.\start_fastapi.ps1
+### Terminal 2 - Celery worker
+
+```bash
+cd python-api
+source .venv/bin/activate
+celery -A tasks worker --loglevel=info
 ```
 
-## API Endpoints
+## API endpoints
 
-- **GET** `/` - Health check
-- **POST** `/analyze-video` - Start video analysis task
-  ```json
-  {
-    "video_id": "test123"
-  }
-  ```
-- **GET** `/task/{task_id}` - Get task status and result
+- `GET /` - Service check
+- `GET /health` - Health + broker info
+- `POST /analyze-video` - Start analysis task
+- `GET /task/{task_id}` - Task status/result
 
-## Testing
+### Example request
 
-Test the analyze-video endpoint:
-```powershell
-curl -X POST http://127.0.0.1:8000/analyze-video -H "Content-Type: application/json" -d '{\"video_id\":\"test123\"}'
+```bash
+curl -X POST http://127.0.0.1:8000/analyze-video \
+  -H "Content-Type: application/json" \
+  -d '{"video_id":"test123"}'
 ```
-
-Check task status (replace `{task_id}` with the ID from above):
-```powershell
-curl http://127.0.0.1:8000/task/{task_id}
-```
-
-## Scripts
-
-- `detect_pose.py` - YOLO pose detection
-  ```powershell
-  python detect_pose.py input.jpg output.jpg
-  ```
-
-- `action_classify.py` - Action classification
-  ```powershell
-  python action_classify.py input.jpg
-  ```
-
-## Troubleshooting
-
-1. **Docker not running**: Start Docker Desktop first
-2. **Redis connection error**: Make sure Redis is running on port 6379
-3. **Module not found**: Activate the virtual environment first
-4. **Celery worker not starting**: Check Redis is running
 
