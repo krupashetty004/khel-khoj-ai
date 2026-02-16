@@ -1,0 +1,47 @@
+version: "3.9"
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "5000:5000"
+
+  python-api:
+    build: ./python-api
+    env_file:
+      - ./python-api/.env
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    depends_on:
+      - redis
+    ports:
+      - "8000:8000"
+
+  celery-worker:
+    build: ./python-api
+    env_file:
+      - ./python-api/.env
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    command: celery -A tasks worker --loglevel=info
+    depends_on:
+      - redis
+
+  frontend:
+    build: ./my-next-app
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=http://backend:5000
+      - NEXT_PUBLIC_FASTAPI_URL=http://python-api:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+      - python-api

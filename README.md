@@ -1,100 +1,129 @@
 # Khel-Khoj AI
-**AI-Powered Rural Sports Talent Identification Platform**
 
-## 📚 Complete Project Guide
-For a detailed walkthrough, see [PROJECT_GUIDE.md](./PROJECT_GUIDE.md).
+AI-powered rural sports talent identification platform.
+
+## What is implemented now (working baseline)
+
+This repository now contains an end-to-end **MVP** across frontend + backend + AI worker:
+
+- **Frontend (Next.js)**
+  - Home dashboard (`/`)
+  - Athletes page (`/athletes`) that reads from Node API and supports fallback mode
+  - AI Analysis page (`/analyze`) to trigger FastAPI/Celery tasks and poll status
+- **Node backend (Express + Mongo optional)**
+  - `GET /health`
+  - `GET /api/athletes` (returns Mongo data when connected, otherwise demo fallback)
+  - `GET /api/athletes/:id`
+  - `POST /api/athletes`
+  - `GET /api/dashboard` (Firebase-protected route)
+- **Python AI service (FastAPI + Celery + Redis)**
+  - `GET /health`
+  - `GET /athlete/{athlete_id}`
+  - `POST /add` (queues Celery sum task)
+  - `POST /analyze-video`
+  - `GET /task/{task_id}`
 
 ---
 
-## ✅ What was fixed in this cleanup
-This repository had runtime setup issues that made local development unreliable. The following were corrected:
+## Required credentials / URLs (please provide)
 
-- Added safer startup behavior for the Node backend (works even when Mongo/Firebase are not configured).
-- Added explicit health endpoints for Node and FastAPI services.
-- Made Firebase auth middleware fail gracefully with actionable messages.
-- Added environment variable templates for both backend services.
-- Added `requirements.txt` for the Python API for reproducible dependency installs.
+### backend/.env
+Copy `backend/.env.example` to `backend/.env`:
 
----
+- `PORT=5000`
+- `MONGODB_URI=<your mongodb uri>`
+- `FIREBASE_SERVICE_ACCOUNT_PATH=<path to firebase service account json>`
 
-## 🏗️ Architecture
-- `my-next-app/` → Next.js frontend (coach dashboard foundations)
-- `backend/` → Node.js + Express API (athletes, protected dashboard, auth middleware)
-- `python-api/` → FastAPI + Celery worker (video analysis tasks)
-
----
-
-## 🔐 Required credentials, URLs, and configuration
-You asked what needs to be provided to make the solution fully functional. Use this checklist:
-
-### 1) Node Backend (`backend/.env`)
-Copy `backend/.env.example` to `backend/.env` and fill these values:
-
-- `PORT` → API port (default `5000`)
-- `MONGODB_URI` → MongoDB Atlas/local connection string
-- `FIREBASE_SERVICE_ACCOUNT_PATH` → path to Firebase Admin service account JSON
-
-### 2) Python API (`python-api/.env`)
+### python-api/.env
 Copy `python-api/.env.example` to `python-api/.env`:
 
-- `FASTAPI_HOST` (default `127.0.0.1`)
-- `FASTAPI_PORT` (default `8000`)
-- `CELERY_BROKER_URL` (default `redis://localhost:6379/0`)
-- `CELERY_RESULT_BACKEND` (default `redis://localhost:6379/1`)
+- `FASTAPI_HOST=127.0.0.1`
+- `FASTAPI_PORT=8000`
+- `CELERY_BROKER_URL=redis://localhost:6379/0`
+- `CELERY_RESULT_BACKEND=redis://localhost:6379/1`
 
-### 3) Infrastructure/services you must provide
-- **MongoDB instance URL** (Atlas or local)
-- **Firebase project + service account JSON**
-- **Redis server URL** (local Docker is fine)
-- (Optional, future phases) **Gemini API key**, **Supabase URL + key**, **Ollama endpoint**, **Hugging Face token**
+### my-next-app/.env.local
+Copy `my-next-app/.env.example` to `my-next-app/.env.local`:
+
+- `NEXT_PUBLIC_BACKEND_URL=http://localhost:5000`
+- `NEXT_PUBLIC_FASTAPI_URL=http://localhost:8000`
 
 ---
 
-## 🚀 Quick start
+## Run locally (without Docker)
 
-### A) Frontend
+### 1) Start Redis
 ```bash
-cd my-next-app
-npm install
-npm run dev
+docker run -d --name redis-local -p 6379:6379 redis
 ```
-Open: `http://localhost:3000`
 
-### B) Node backend
+### 2) Start backend
 ```bash
 cd backend
 cp .env.example .env
-# fill values in .env
+# fill .env
 npm install
 npm run dev
 ```
-- Health: `http://localhost:5000/health`
-- Athletes API: `http://localhost:5000/api/athletes`
 
-### C) Python API + worker
+### 3) Start python api
 ```bash
 cd python-api
 python -m venv .venv
-source .venv/bin/activate  # Windows: .\.venv\Scripts\Activate.ps1
+source .venv/bin/activate   # Windows: .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 cp .env.example .env
-# start redis first
 uvicorn main:app --reload --port 8000
 ```
-In another terminal:
+
+### 4) Start celery worker
 ```bash
 cd python-api
 source .venv/bin/activate
 celery -A tasks worker --loglevel=info
 ```
-- Health: `http://localhost:8000/health`
-- Start task: `POST http://localhost:8000/analyze-video`
+
+### 5) Start frontend
+```bash
+cd my-next-app
+cp .env.example .env.local
+npm install
+npm run dev
+```
+
+Open:
+- Frontend: `http://localhost:3000`
+- Node health: `http://localhost:5000/health`
+- FastAPI health: `http://localhost:8000/health`
+
+- `PORT` → API port (default `5000`)
+- `MONGODB_URI` → MongoDB Atlas/local connection string
+- `FIREBASE_SERVICE_ACCOUNT_PATH` → path to Firebase Admin service account JSON
+
+## Run with Docker Compose
+
+```bash
+cp backend/.env.example backend/.env
+cp python-api/.env.example python-api/.env
+docker compose up --build
+```
+
+Open frontend at `http://localhost:3000`.
 
 ---
 
-## 📘 Mandatory Core Requirements (from internship plan)
-1. Maintain this `README.md` with weekly learning notes.
-2. Use feature/phase branches with clear commit messages.
-3. Push code daily to GitHub.
-4. Record short demos after each major phase.
+## Phase status
+
+- ✅ Phase 0: frontend foundations (HTML/CSS/Tailwind/React/Next)
+- ✅ Phase 1: backend + FastAPI + Celery basics
+- 🟡 Phase 2: CV scripts exist (YOLO/frames/speed), production-grade integration pending real model tuning + test data
+- 🟡 Phase 3: agent/vector DB architecture documented; production integrations pending credentials + benchmark data
+- 🟡 Phase 4: Docker/Compose implemented; Cloud Run + n8n workflows pending your cloud credentials and deployment targets
+
+---
+
+## About Codex local/free usage
+
+- Codex-style workflows can be run locally if you have compatible tooling/access, but fully free unlimited usage is typically **not guaranteed** and depends on your account/plan.
+- Best approach: run this repository locally (or on your server), use your own API keys/credentials, and keep using GitHub branches + PR workflow.
 

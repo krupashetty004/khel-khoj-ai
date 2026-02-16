@@ -1,73 +1,46 @@
 # Khel-Khoj AI - Python API Service
 
-FastAPI service with Celery for background video analysis tasks.
+FastAPI service with Celery tasks for analytics workflows.
 
-## Prerequisites
+## Endpoints
 
-1. Python 3.10+
-2. Redis running on `localhost:6379` (or custom URL)
-3. Virtual environment
+- `GET /` basic service check
+- `GET /health` health + broker metadata
+- `GET /athlete/{athlete_id}` sample profile response
+- `POST /add` enqueue Celery sum task
+- `POST /analyze-video` enqueue simulated analysis task
+- `GET /task/{task_id}` check task state/result
 
-## Setup
-
-### 1) Create + activate virtual env
+## Local Setup
 
 ```bash
 cd python-api
 python -m venv .venv
 source .venv/bin/activate
-# Windows PowerShell: .\.venv\Scripts\Activate.ps1
-```
-
-### 2) Install dependencies
-
-```bash
-pip install --upgrade pip
 pip install -r requirements.txt
-```
-
-### 3) Configure environment
-
-```bash
 cp .env.example .env
 ```
 
-Defaults:
-- `FASTAPI_HOST=127.0.0.1`
-- `FASTAPI_PORT=8000`
-- `CELERY_BROKER_URL=redis://localhost:6379/0`
-- `CELERY_RESULT_BACKEND=redis://localhost:6379/1`
-
-## Run services
-
-### Terminal 1 - FastAPI
-
+Start FastAPI:
 ```bash
-cd python-api
-source .venv/bin/activate
 uvicorn main:app --reload --port 8000
 ```
 
-### Terminal 2 - Celery worker
-
+Start Celery worker:
 ```bash
-cd python-api
-source .venv/bin/activate
 celery -A tasks worker --loglevel=info
 ```
 
-## API endpoints
-
-- `GET /` - Service check
-- `GET /health` - Health + broker info
-- `POST /analyze-video` - Start analysis task
-- `GET /task/{task_id}` - Task status/result
-
-### Example request
+## Example calls
 
 ```bash
+curl http://127.0.0.1:8000/health
+
+curl -X POST http://127.0.0.1:8000/add \
+  -H "Content-Type: application/json" \
+  -d '{"x":4,"y":5}'
+
 curl -X POST http://127.0.0.1:8000/analyze-video \
   -H "Content-Type: application/json" \
-  -d '{"video_id":"test123"}'
+  -d '{"video_id":"demo-video-001"}'
 ```
-

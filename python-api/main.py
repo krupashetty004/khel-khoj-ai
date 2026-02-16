@@ -14,6 +14,11 @@ class AnalyzeRequest(BaseModel):
     video_id: str = Field(..., min_length=1, description="Unique identifier of the uploaded video")
 
 
+class AddRequest(BaseModel):
+    x: float
+    y: float
+
+
 @app.get("/")
 def root() -> Dict[str, str]:
     return {"msg": "FastAPI + Celery scaffold is running"}
@@ -28,12 +33,24 @@ def health() -> Dict[str, str]:
     }
 
 
+@app.get("/athlete/{athlete_id}")
+def athlete_profile(athlete_id: int) -> Dict[str, Any]:
+    return {
+        "athlete_id": athlete_id,
+        "name": f"Athlete-{athlete_id}",
+        "sport": "Kabaddi",
+        "note": "Sample profile endpoint for Phase 1 FastAPI practice task.",
+    }
+
+
+@app.post("/add")
+def enqueue_add(req: AddRequest) -> Dict[str, str]:
+    task = tasks.add.delay(req.x, req.y)
+    return {"task_id": task.id, "status": "queued"}
+
+
 @app.post("/analyze-video")
 def analyze_video(req: AnalyzeRequest) -> Dict[str, str]:
-    """
-    Dispatch a background Celery task to analyze a video.
-    Returns a task_id that can be used to fetch status/result.
-    """
     task = tasks.analyze_video.delay(req.video_id)
     return {"task_id": task.id, "status": "processing started"}
 
