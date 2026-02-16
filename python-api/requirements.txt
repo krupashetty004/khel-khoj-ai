@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+celery[redis]
+redis
+ultralytics
+opencv-python
+transformers
+torch
+torchvision
+pillow
+matplotlib

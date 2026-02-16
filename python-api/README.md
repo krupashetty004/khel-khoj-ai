@@ -1,127 +1,46 @@
 # Khel-Khoj AI - Python API Service
 
-FastAPI service with Celery for background video analysis tasks.
+FastAPI service with Celery tasks for analytics workflows.
 
-## Prerequisites
+## Endpoints
 
-1. **Python 3.10+** installed
-2. **Redis** running (see options below)
-3. **Virtual environment** created
+- `GET /` basic service check
+- `GET /health` health + broker metadata
+- `GET /athlete/{athlete_id}` sample profile response
+- `POST /add` enqueue Celery sum task
+- `POST /analyze-video` enqueue simulated analysis task
+- `GET /task/{task_id}` check task state/result
 
-## Setup
+## Local Setup
 
-### 1. Create Virtual Environment
-
-```powershell
+```bash
 cd python-api
 python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
 ```
 
-### 2. Activate Virtual Environment
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-### 3. Install Dependencies
-
-```powershell
-python -m pip install --upgrade pip
-python -m pip install fastapi uvicorn celery[redis] redis ultralytics opencv-python transformers torch torchvision pillow matplotlib
-```
-
-### 4. Start Redis
-
-**Option A: Docker (Recommended)**
-```powershell
-# Make sure Docker Desktop is running first
-docker run -d --name redis-local -p 6379:6379 redis
-```
-
-**Option B: Windows Redis**
-- Download from: https://github.com/microsoftarchive/redis/releases
-- Extract and run `redis-server.exe`
-
-**Option C: WSL**
+Start FastAPI:
 ```bash
-wsl redis-server
-```
-
-## Running Services
-
-### Quick Start Scripts
-
-Run the setup check:
-```powershell
-cd python-api
-.\start_services.ps1
-```
-
-### Manual Start
-
-**Terminal 1 - Celery Worker:**
-```powershell
-cd python-api
-.\.venv\Scripts\Activate.ps1
-celery -A tasks worker --loglevel=info
-```
-
-Or use the script:
-```powershell
-.\start_celery.ps1
-```
-
-**Terminal 2 - FastAPI Server:**
-```powershell
-cd python-api
-.\.venv\Scripts\Activate.ps1
 uvicorn main:app --reload --port 8000
 ```
 
-Or use the script:
-```powershell
-.\start_fastapi.ps1
+Start Celery worker:
+```bash
+celery -A tasks worker --loglevel=info
 ```
 
-## API Endpoints
+## Example calls
 
-- **GET** `/` - Health check
-- **POST** `/analyze-video` - Start video analysis task
-  ```json
-  {
-    "video_id": "test123"
-  }
-  ```
-- **GET** `/task/{task_id}` - Get task status and result
+```bash
+curl http://127.0.0.1:8000/health
 
-## Testing
+curl -X POST http://127.0.0.1:8000/add \
+  -H "Content-Type: application/json" \
+  -d '{"x":4,"y":5}'
 
-Test the analyze-video endpoint:
-```powershell
-curl -X POST http://127.0.0.1:8000/analyze-video -H "Content-Type: application/json" -d '{\"video_id\":\"test123\"}'
+curl -X POST http://127.0.0.1:8000/analyze-video \
+  -H "Content-Type: application/json" \
+  -d '{"video_id":"demo-video-001"}'
 ```
-
-Check task status (replace `{task_id}` with the ID from above):
-```powershell
-curl http://127.0.0.1:8000/task/{task_id}
-```
-
-## Scripts
-
-- `detect_pose.py` - YOLO pose detection
-  ```powershell
-  python detect_pose.py input.jpg output.jpg
-  ```
-
-- `action_classify.py` - Action classification
-  ```powershell
-  python action_classify.py input.jpg
-  ```
-
-## Troubleshooting
-
-1. **Docker not running**: Start Docker Desktop first
-2. **Redis connection error**: Make sure Redis is running on port 6379
-3. **Module not found**: Activate the virtual environment first
-4. **Celery worker not starting**: Check Redis is running
-
