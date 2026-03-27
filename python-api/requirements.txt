@@ -4,8 +4,15 @@ celery[redis]
 redis
 ultralytics
 opencv-python
+mediapipe
 transformers
 torch
 torchvision
 pillow
 matplotlib
+numpy
+pydantic
+pydantic-settings
+scikit-learn
+requests
+pytest

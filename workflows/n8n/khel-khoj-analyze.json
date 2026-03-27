@@ -1,0 +1,104 @@
+{
+  "name": "Khel-Khoj Analyze Pipeline",
+  "nodes": [
+    {
+      "id": "1",
+      "name": "Webhook In",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 300],
+      "parameters": {
+        "path": "khel-khoj/analyze",
+        "httpMethod": "POST"
+      }
+    },
+    {
+      "id": "2",
+      "name": "Trigger FastAPI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "parameters": {
+        "url": "http://python-api:8000/api/v1/analyze-video",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {},
+        "body": {
+          "video_id": "={{$json.video_id}}",
+          "athlete_id": "={{$json.athlete_id}}",
+          "video_path": "={{$json.video_path}}"
+        }
+      }
+    },
+    {
+      "id": "3",
+      "name": "Poll Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [700, 300],
+      "parameters": {
+        "url": "http://python-api:8000/api/v1/task/{{$json[\"body\"].task_id}}",
+        "method": "GET",
+        "jsonParameters": true,
+        "options": {
+          "retry": {
+            "maxAttempts": 12,
+            "waitBetweenAttempts": 10
+          }
+        }
+      }
+    },
+    {
+      "id": "4",
+      "name": "Notify",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [950, 300],
+      "parameters": {
+        "url": "={{$json.callback_url || 'https://example.com/webhook'}}",
+        "method": "POST",
+        "jsonParameters": true,
+        "body": {
+          "task_id": "={{$json.body.task_id}}",
+          "state": "={{$json.body.state}}",
+          "result": "={{$json.body.result}}"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Trigger FastAPI": {
+      "main": [
+        [
+          {
+            "node": "Poll Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook In": {
+      "main": [
+        [
+          {
+            "node": "Trigger FastAPI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poll Status": {
+      "main": [
+        [
+          {
+            "node": "Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

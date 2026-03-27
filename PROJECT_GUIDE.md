@@ -347,7 +347,7 @@ We've created a script to start everything automatically:
 ## 🎬 Using the Video Analysis Pipeline
 
 ### Step 1: Prepare Your Video
-1. Place your video file in: `python-api/video_input/sample.mp4`
+1. Place your video file in: `python-api/video_input/string.mp4`
 2. Supported formats: MP4, AVI, MOV (MP4 recommended)
 
 ### Step 2: Extract Frames

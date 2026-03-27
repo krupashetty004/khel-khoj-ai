@@ -1,78 +1,86 @@
 import os
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
-import tasks
 import uvicorn
 from celery.result import AsyncResult
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
-app = FastAPI(title="Khel-Khoj FastAPI (AI Tasks)")
+import tasks
+from khelkhoj_ai.config import settings
+
+app = FastAPI(title="Khel-Khoj FastAPI (AI Tasks)", version="1.0")
 
 
 class AnalyzeRequest(BaseModel):
     video_id: str = Field(..., min_length=1, description="Unique identifier of the uploaded video")
+    athlete_id: Optional[str] = Field(None, description="Athlete ID this video belongs to")
+    video_path: Optional[str] = Field(None, description="Absolute or relative path to uploaded video")
+    exercise_hint: Optional[str] = Field(None, description="Optional user-selected exercise type override")
 
 
-class AddRequest(BaseModel):
-    x: float
-    y: float
+class AnalyzeResponse(BaseModel):
+    task_id: str
+    status: str
 
 
-@app.get("/")
-def root() -> Dict[str, str]:
-    return {"msg": "FastAPI + Celery scaffold is running"}
+class TaskStatus(BaseModel):
+    task_id: str
+    state: str
+    info: Optional[Any] = None
+    result: Optional[Any] = None
+    error: Optional[str] = None
 
 
 @app.get("/health")
-def health() -> Dict[str, str]:
+def health() -> Dict[str, Any]:
     return {
         "status": "ok",
         "service": "khel-khoj-fastapi",
-        "celery_broker": os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0"),
+        "celery_broker": settings.celery_broker_url,
     }
 
 
-@app.get("/athlete/{athlete_id}")
-def athlete_profile(athlete_id: int) -> Dict[str, Any]:
-    return {
-        "athlete_id": athlete_id,
-        "name": f"Athlete-{athlete_id}",
-        "sport": "Kabaddi",
-        "note": "Sample profile endpoint for Phase 1 FastAPI practice task.",
-    }
+@app.post("/api/v1/analyze-video", response_model=AnalyzeResponse)
+def analyze_video(req: AnalyzeRequest) -> AnalyzeResponse:
+    task = tasks.analyze_video.delay(req.video_id, req.athlete_id or "unknown", req.video_path, req.exercise_hint)
+    return AnalyzeResponse(task_id=task.id, status="queued")
 
 
-@app.post("/add")
-def enqueue_add(req: AddRequest) -> Dict[str, str]:
-    task = tasks.add.delay(req.x, req.y)
-    return {"task_id": task.id, "status": "queued"}
+@app.get("/api/v1/task/{task_id}", response_model=TaskStatus)
+def get_task_status(task_id: str) -> TaskStatus:
+    try:
+        res = AsyncResult(task_id, app=tasks.analyze_video.app)
 
+        payload = {
+            "task_id": task_id,
+            "state": res.state
+        }
 
-@app.post("/analyze-video")
-def analyze_video(req: AnalyzeRequest) -> Dict[str, str]:
-    task = tasks.analyze_video.delay(req.video_id)
-    return {"task_id": task.id, "status": "processing started"}
+        if res.state == "PENDING":
+            payload["info"] = "Task pending"
 
+        elif res.state in {"STARTED", "PROGRESS", "RETRY"}:
+            payload["info"] = res.info
 
-@app.get("/task/{task_id}")
-def get_task_status(task_id: str) -> Dict[str, Any]:
-    res = AsyncResult(task_id, app=tasks.analyze_video.app)
-    response: Dict[str, Any] = {"task_id": task_id, "state": res.state}
+        elif res.state == "SUCCESS":
+            payload["result"] = res.result
+            if isinstance(res.result, dict) and res.result.get("status") == "failed":
+                payload["error"] = res.result.get("error")
 
-    if res.state == "PENDING":
-        response["info"] = "Task pending"
-    elif res.state in {"PROGRESS", "STARTED", "RETRY"}:
-        response["info"] = res.info
-    elif res.state == "SUCCESS":
-        response["result"] = res.result
-    elif res.state == "FAILURE":
-        response["error"] = str(res.result)
+        elif res.state == "FAILURE":
+            payload["error"] = str(res.result)
+            payload["result"] = res.result
 
-    return response
+        return TaskStatus(**payload)
+
+    except Exception as exc:
+        return TaskStatus(
+            task_id=task_id,
+            state="ERROR",
+            error=str(exc)
+        )
 
 
 if __name__ == "__main__":
-    host = os.getenv("FASTAPI_HOST", "127.0.0.1")
-    port = int(os.getenv("FASTAPI_PORT", "8000"))
-    uvicorn.run("main:app", host=host, port=port, reload=True)
+    uvicorn.run("main:app", host=settings.fastapi_host, port=settings.fastapi_port, reload=True)

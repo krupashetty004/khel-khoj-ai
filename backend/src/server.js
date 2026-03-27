@@ -5,6 +5,8 @@ const cors = require("cors");
 const morgan = require("morgan");
 
 const athleteRoutes = require("./routes/athletes");
+const jobRoutes = require("./routes/jobs");
+const userRoutes = require("./routes/users");
 const authMiddleware = require("./middleware/firebaseAuth");
 
 const PORT = Number(process.env.PORT) || 5000;
@@ -17,9 +19,11 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 app.use("/api/athletes", athleteRoutes);
+app.use("/api/jobs", jobRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("/api/dashboard", authMiddleware, (req, res) => {
-  res.json({ msg: "Protected dashboard", uid: req.userUid });
+  res.json({ msg: "Protected dashboard", uid: req.userUid, role: req.userRole });
 });
 
 app.get("/health", (req, res) => {
@@ -33,6 +37,7 @@ app.get("/health", (req, res) => {
       ready: mongoReady,
       state: mongoState,
     },
+    fastapi_url: process.env.FASTAPI_BASE_URL || "http://localhost:8000",
   });
 });
 

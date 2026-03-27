@@ -1,5 +1,6 @@
 const Athlete = require("../models/Athlete");
 const mongoose = require("mongoose");
+const { formatResponse } = require("../utils/response");
 
 const fallbackAthletes = [
   {
@@ -26,17 +27,21 @@ exports.getAllAthletes = async (req, res) => {
   try {
     if (!dbReady()) {
       return res.json({
-        source: "fallback",
-        message: "MongoDB is not connected. Returning demo athletes.",
-        athletes: fallbackAthletes,
+        ...formatResponse({
+          data: {
+            source: "fallback",
+            message: "MongoDB is not connected. Returning demo athletes.",
+            athletes: fallbackAthletes,
+          },
+        }),
       });
     }
 
     const athletes = await Athlete.find().sort({ createdAt: -1 });
-    return res.json({ source: "database", athletes });
+    return res.json(formatResponse({ data: { source: "database", athletes } }));
   } catch (error) {
     console.error("Error fetching athletes:", error);
-    return res.status(500).json({ error: "Server error", details: error.message });
+    return res.status(500).json(formatResponse({ ok: false, error: error.message }));
   }
 };
 
@@ -46,43 +51,46 @@ exports.getAthleteById = async (req, res) => {
 
     if (!dbReady()) {
       const fallback = fallbackAthletes.find((athlete) => athlete._id === id);
-      if (!fallback) return res.status(404).json({ error: "Not found" });
-      return res.json({ source: "fallback", athlete: fallback });
+      if (!fallback) return res.status(404).json(formatResponse({ ok: false, error: "Not found" }));
+      return res.json(formatResponse({ data: { source: "fallback", athlete: fallback } }));
     }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: "Invalid athlete id" });
+      return res.status(400).json(formatResponse({ ok: false, error: "Invalid athlete id" }));
     }
 
     const athlete = await Athlete.findById(id);
-    if (!athlete) return res.status(404).json({ error: "Not found" });
+    if (!athlete) return res.status(404).json(formatResponse({ ok: false, error: "Not found" }));
 
-    return res.json({ source: "database", athlete });
+    return res.json(formatResponse({ data: { source: "database", athlete } }));
   } catch (error) {
     console.error("Error fetching athlete:", error);
-    return res.status(500).json({ error: "Server error", details: error.message });
+    return res.status(500).json(formatResponse({ ok: false, error: error.message }));
   }
 };
 
 exports.createAthlete = async (req, res) => {
   try {
     if (!dbReady()) {
-      return res.status(503).json({
-        error: "Database not connected",
-        message: "Configure MONGODB_URI to create persistent athletes.",
-      });
+      return res.status(503).json(
+        formatResponse({
+          ok: false,
+          error: "Database not connected",
+          data: { message: "Configure MONGODB_URI to create persistent athletes." },
+        })
+      );
     }
 
     const { name, sport, bio, imageUrl, region } = req.body;
 
     if (!name || !sport) {
-      return res.status(400).json({ error: "name and sport are required" });
+      return res.status(400).json(formatResponse({ ok: false, error: "name and sport are required" }));
     }
 
     const athlete = await Athlete.create({ name, sport, bio, imageUrl, region });
-    return res.status(201).json({ athlete });
+    return res.status(201).json(formatResponse({ data: { athlete } }));
   } catch (error) {
     console.error("Error creating athlete:", error);
-    return res.status(500).json({ error: "Server error", details: error.message });
+    return res.status(500).json(formatResponse({ ok: false, error: error.message }));
   }
 };

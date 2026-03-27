@@ -10,6 +10,10 @@ __pycache__/
 # Env files
 .env
 .env.local
+artifacts/
+datasets/uploads/
+datasets/raw/
+datasets/processed/
 
 # OS
 .DS_Store

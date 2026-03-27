@@ -2,7 +2,7 @@
 import cv2
 import os
 
-VIDEO_PATH = "video_input/sample.mp4"
+VIDEO_PATH = "video_input/string.mp4"
 OUTPUT_DIR = "frames"
 FRAME_GAP = 10
 

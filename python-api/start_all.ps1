@@ -36,7 +36,7 @@ Write-Host ""
 
 # Start Celery Worker in new window
 Write-Host "Starting Celery worker..." -ForegroundColor Cyan
-$celeryCmd = "cd '$scriptPath'; .\.venv\Scripts\Activate.ps1; Write-Host 'Celery Worker - Press Ctrl+C to stop' -ForegroundColor Green; celery -A tasks worker --loglevel=info"
+$celeryCmd = "cd '$scriptPath'; Stop-Process -Name celery -Force -ErrorAction SilentlyContinue; .\.venv\Scripts\Activate.ps1; Write-Host 'Celery Worker - Press Ctrl+C to stop' -ForegroundColor Green; & .\.venv\Scripts\python.exe -m celery -A tasks worker --loglevel=info --pool solo --concurrency=1"
 Start-Process powershell -ArgumentList "-NoExit", "-Command", $celeryCmd
 
 Start-Sleep -Seconds 2

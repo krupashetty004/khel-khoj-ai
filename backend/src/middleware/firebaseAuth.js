@@ -43,8 +43,10 @@ module.exports = async (req, res, next) => {
   try {
     const decoded = await admin.auth().verifyIdToken(token);
     req.userUid = decoded.uid;
+    req.userClaims = decoded;
+    req.userRole = decoded.role || decoded.roleName || "user";
     next();
-  } catch (error) {
-    return res.status(401).json({ error: "Invalid token" });
+  } catch (err) {
+    return res.status(401).json({ error: "Invalid token", details: err.message });
   }
 };
