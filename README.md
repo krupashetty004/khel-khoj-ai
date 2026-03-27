@@ -30,6 +30,61 @@ It has three main parts:
 - Redis
 - MongoDB (optional for full persistence, fallback works for some flows)
 
+## Setup On A New Device
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/krupashetty004/khel-khoj-ai.git
+cd khel-khoj-ai
+```
+
+2. Copy environment templates:
+
+```bash
+cp backend/.env.example backend/.env
+cp python-api/.env.example python-api/.env
+cp my-next-app/.env.example my-next-app/.env.local
+```
+
+3. Fill required values in env files:
+- MongoDB URI (if you want persistent DB)
+- Firebase public keys in my-next-app/.env.local
+- Firebase service account path in backend/.env
+- Optional LLM keys (Gemini/Ollama)
+
+4. Install dependencies:
+
+```bash
+cd backend && npm install
+cd ../my-next-app && npm install
+cd ../python-api
+python -m venv .venv
+```
+
+Windows:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+Mac/Linux:
+
+```bash
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+5. Start services:
+- Redis
+- Backend
+- FastAPI
+- Celery worker
+- Frontend
+
+Use the Run Locally section below for exact commands.
+
 ## Environment Setup
 
 Copy example files first:

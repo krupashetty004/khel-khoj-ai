@@ -1,19 +1,36 @@
 # Node
 node_modules/
 .next/
+npm-debug.log*
+yarn-error.log*
 
 # Python
 __pycache__/
 *.py[cod]
 .venv/
+*.log
+*.sqlite
 
 # Env files
 .env
 .env.local
+.env.*.local
 artifacts/
 datasets/uploads/
 datasets/raw/
 datasets/processed/
+python-api/video_input/
+python-api/uvicorn.log
+uploads/
+
+# Secrets
+*firebase-adminsdk*.json
+serviceAccountKey.json
 
 # OS
 .DS_Store
+Thumbs.db
+
+# Local-only folders
+model/
+notebooks/
