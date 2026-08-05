@@ -15,8 +15,14 @@ class Settings(BaseSettings):
     celery_result_backend: str = Field("redis://localhost:6379/1", env="CELERY_RESULT_BACKEND")
 
     # pipeline
-    video_base_dir: Path = Field(Path("video_input"), env="VIDEO_BASE_DIR")
-    artifacts_base_dir: Path = Field(Path("artifacts"), env="ARTIFACTS_BASE_DIR")
+    #video_base_dir: Path = Field(Path("video_input"), env="VIDEO_BASE_DIR")
+    #artifacts_base_dir: Path = Field(Path("artifacts"), env="ARTIFACTS_BASE_DIR")
+    video_base_dir: Path = Field(Path("/tmp/video_input"), env="VIDEO_BASE_DIR")
+    artifacts_base_dir: Path = Field(Path("/tmp/artifacts"), env="ARTIFACTS_BASE_DIR")
+    vector_store_path: Path = Field(
+        Path("/tmp/artifacts/vector_store.sqlite"),
+        env="VECTOR_STORE_PATH",
+    )
     frame_stride: int = Field(5, env="FRAME_STRIDE")
     max_frames: int = Field(240, env="MAX_FRAMES")
     pose_model_path: str = Field("yolov8n-pose.pt", env="POSE_MODEL_PATH")
@@ -28,7 +34,7 @@ class Settings(BaseSettings):
 
     # embeddings / vector db
     embedding_dimension: int = Field(256, env="EMBEDDING_DIMENSION")
-    vector_store_path: Path = Field(Path("artifacts/vector_store.sqlite"), env="VECTOR_STORE_PATH")
+    #vector_store_path: Path = Field(Path("artifacts/vector_store.sqlite"), env="VECTOR_STORE_PATH")
     supabase_url: Optional[str] = Field(None, env="SUPABASE_URL")
     supabase_service_key: Optional[str] = Field(None, env="SUPABASE_SERVICE_KEY")
     supabase_table: str = Field("embeddings", env="SUPABASE_TABLE")
