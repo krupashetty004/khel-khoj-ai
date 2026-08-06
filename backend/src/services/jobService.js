@@ -87,7 +87,12 @@ try {
 
   if (err.response) {
     console.error("Status:", err.response.status);
-    console.error("Response:", err.response.data);
+    console.error(
+      "Response:",
+      typeof err.response?.data === "object"
+        ? JSON.stringify(err.response.data, null, 2)
+        : err.response?.data
+);
   }
 
   if (err.request) {
