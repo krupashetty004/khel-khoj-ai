@@ -4,15 +4,16 @@ const path = require("path");
 const axios = require("axios");
 const mongoose = require("mongoose");
 const AnalysisJob = require("../models/AnalysisJob");
+const FormData = require("form-data");
 
 const FASTAPI_URL = process.env.FASTAPI_BASE_URL || "http://localhost:8000";
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.resolve(__dirname, "../../datasets/uploads");
-const PY_VIDEO_DIR = process.env.PY_VIDEO_DIR || path.resolve(__dirname, "../../../python-api/video_input");
+// const PY_VIDEO_DIR = process.env.PY_VIDEO_DIR || path.resolve(__dirname, "../../../python-api/video_input");
 console.log("[jobService] UPLOAD_DIR:", UPLOAD_DIR);
-console.log("[jobService] PY_VIDEO_DIR:", PY_VIDEO_DIR);
+// console.log("[jobService] PY_VIDEO_DIR:", PY_VIDEO_DIR);
 console.log("[jobService] __dirname:", __dirname);
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-fs.mkdirSync(PY_VIDEO_DIR, { recursive: true });
+// fs.mkdirSync(PY_VIDEO_DIR, { recursive: true });
 
 const memoryJobs = new Map();
 
@@ -20,14 +21,20 @@ function dbReady() {
   return mongoose.connection.readyState === 1;
 }
 
-async function createJob({ videoId, athleteId, filePath, uploadedBy, uploaderType, notes, isPublic, exerciseType }) {
-  const destPath = path.join(PY_VIDEO_DIR, `${videoId}.mp4`);
-  fs.copyFileSync(filePath, destPath);
-
+async function createJob({
+  videoId,
+  athleteId,
+  filePath,
+  uploadedBy,
+  uploaderType,
+  notes,
+  isPublic,
+  exerciseType,
+}) {
   const base = {
     videoId,
     athleteId,
-    videoPath: destPath,
+    videoPath: filePath,
     status: "queued",
     uploadedBy: uploadedBy || null,
     uploaderType: uploaderType || "anonymous",
@@ -35,24 +42,49 @@ async function createJob({ videoId, athleteId, filePath, uploadedBy, uploaderTyp
     isPublic: isPublic || false,
     exerciseType: exerciseType || null,
   };
-  
-  const job = dbReady() ? await AnalysisJob.create(base) : { _id: crypto.randomUUID(), ...base };
+
+  const job = dbReady()
+    ? await AnalysisJob.create(base)
+    : { _id: crypto.randomUUID(), ...base };
+
   memoryJobs.set(job._id || job.id, job);
-  
-  const taskResp = await axios.post(`${FASTAPI_URL}/api/v1/analyze-video`, {
-    video_id: videoId,
-    athlete_id: athleteId || "unknown",
-    video_path: destPath,
-    exercise_hint: exerciseType || null,
-  });
-  
+
+  // Upload video directly to FastAPI
+  const form = new FormData();
+
+  form.append("video", fs.createReadStream(filePath));
+  form.append("video_id", videoId);
+  form.append("athlete_id", athleteId || "unknown");
+
+  if (exerciseType) {
+    form.append("exercise_hint", exerciseType);
+  }
+
+  const taskResp = await axios.post(
+    `${FASTAPI_URL}/api/v1/analyze-video`,
+    form,
+    {
+      headers: form.getHeaders(),
+      maxBodyLength: Infinity,
+      maxContentLength: Infinity,
+      timeout: 120000,
+    }
+  );
+
   const taskId = taskResp.data.task_id;
+
   job.taskId = taskId;
   job.status = "processing";
-  
-  if (dbReady()) await AnalysisJob.findByIdAndUpdate(job._id, { taskId, status: "processing" });
+
+  if (dbReady()) {
+    await AnalysisJob.findByIdAndUpdate(job._id, {
+      taskId,
+      status: "processing",
+    });
+  }
+
   memoryJobs.set(job._id || job.id, job);
-  
+
   return job;
 }
 

@@ -3,9 +3,10 @@ from typing import Any, Dict, Optional
 
 import uvicorn
 from celery.result import AsyncResult
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel, Field
-
+import shutil
+import uuid
 import tasks
 from khelkhoj_ai.config import settings
 
@@ -41,10 +42,33 @@ def health() -> Dict[str, Any]:
     }
 
 
+UPLOAD_DIR = "video_input"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
 @app.post("/api/v1/analyze-video", response_model=AnalyzeResponse)
-def analyze_video(req: AnalyzeRequest) -> AnalyzeResponse:
-    task = tasks.analyze_video.delay(req.video_id, req.athlete_id or "unknown", req.video_path, req.exercise_hint)
-    return AnalyzeResponse(task_id=task.id, status="queued")
+async def analyze_video(
+    video: UploadFile = File(...),
+    video_id: str = Form(...),
+    athlete_id: str = Form("unknown"),
+    exercise_hint: Optional[str] = Form(None),
+):
+    filename = f"{uuid.uuid4()}.mp4"
+    saved_path = os.path.join(UPLOAD_DIR, filename)
+
+    with open(saved_path, "wb") as buffer:
+        shutil.copyfileobj(video.file, buffer)
+
+    task = tasks.analyze_video.delay(
+        video_id,
+        athlete_id,
+        saved_path,
+        exercise_hint,
+    )
+
+    return AnalyzeResponse(
+        task_id=task.id,
+        status="queued",
+    )
 
 
 @app.get("/api/v1/task/{task_id}", response_model=TaskStatus)

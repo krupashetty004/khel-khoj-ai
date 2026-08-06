@@ -16,3 +16,4 @@ pydantic-settings
 scikit-learn
 requests
 pytest
+python-multipart
