@@ -60,7 +60,12 @@ async function createJob({
     form.append("exercise_hint", exerciseType);
   }
 
-  const taskResp = await axios.post(
+let taskResp;
+
+try {
+  console.log("Posting to:", `${FASTAPI_URL}/api/v1/analyze-video`);
+
+  taskResp = await axios.post(
     `${FASTAPI_URL}/api/v1/analyze-video`,
     form,
     {
@@ -70,6 +75,25 @@ async function createJob({
       timeout: 120000,
     }
   );
+
+  console.log("FastAPI response:", taskResp.data);
+
+} catch (err) {
+  console.error("========== FASTAPI REQUEST FAILED ==========");
+  console.error("Message:", err.message);
+
+  if (err.response) {
+    console.error("Status:", err.response.status);
+    console.error("Response:", err.response.data);
+  }
+
+  if (err.request) {
+    console.error("No response received from FastAPI");
+  }
+
+  throw err;
+}
+
 
   const taskId = taskResp.data.task_id;
 
