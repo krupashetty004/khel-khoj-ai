@@ -1,4 +1,4 @@
-const { formatResponse, handleError } = require("../utils/response");
+const { formatResponse } = require("../utils/response");
 const { createJob, refreshJob, getJob, UPLOAD_DIR } = require("../services/jobService");
 const path = require("path");
 const fs = require("fs");
@@ -14,20 +14,36 @@ const createSchema = z.object({
 exports.createJob = async (req, res) => {
   try {
     const parsed = createSchema.safeParse(req.body);
+
     if (!parsed.success) {
-      return res.status(400).json(formatResponse({ ok: false, error: parsed.error.flatten() }));
+      return res.status(400).json(
+        formatResponse({
+          ok: false,
+          error: parsed.error.flatten(),
+        })
+      );
     }
 
     const file = req.file;
-    if (!file) return res.status(400).json(formatResponse({ ok: false, error: "video file is required" }));
+
+    if (!file) {
+      return res.status(400).json(
+        formatResponse({
+          ok: false,
+          error: "video file is required",
+        })
+      );
+    }
 
     const videoId = path.parse(file.filename).name;
-    
+
     const uploadedBy = req.userUid || null;
     const uploaderType = req.userRole || "anonymous";
-    
-    const athleteId = parsed.data.athleteId || (uploaderType === "athlete" ? uploadedBy : null);
-    
+
+    const athleteId =
+      parsed.data.athleteId ||
+      (uploaderType === "athlete" ? uploadedBy : null);
+
     const job = await createJob({
       videoId,
       athleteId,
@@ -38,35 +54,88 @@ exports.createJob = async (req, res) => {
       isPublic: parsed.data.isPublic === "true",
       exerciseType: parsed.data.exerciseType,
     });
-    
-    return res.status(201).json(formatResponse({ data: job }));
+
+    return res.status(201).json(
+      formatResponse({
+        data: job,
+      })
+    );
   } catch (error) {
-    return handleError(res, error);
+    console.error("========== CREATE JOB ERROR ==========");
+    console.error(error);
+
+    if (error.response) {
+      console.error("Status:", error.response.status);
+      console.error("Response:", error.response.data);
+    }
+
+    console.error(error.stack);
+
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      details: error.response?.data || null,
+    });
   }
 };
 
 exports.getJob = async (req, res) => {
   try {
     const { id } = req.params;
+
     const job = await getJob(id);
-    if (!job) return res.status(404).json(formatResponse({ ok: false, error: "Job not found" }));
+
+    if (!job) {
+      return res.status(404).json(
+        formatResponse({
+          ok: false,
+          error: "Job not found",
+        })
+      );
+    }
+
     if (job.taskId) {
       const refreshed = await refreshJob(job.taskId, id);
-      return res.json(formatResponse({ data: refreshed }));
+
+      return res.json(
+        formatResponse({
+          data: refreshed,
+        })
+      );
     }
-    return res.json(formatResponse({ data: job }));
+
+    return res.json(
+      formatResponse({
+        data: job,
+      })
+    );
   } catch (error) {
-    return handleError(res, error);
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
 
 exports.downloadArtifact = async (req, res) => {
   try {
     const { filename } = req.params;
+
     const filePath = path.join(UPLOAD_DIR, filename);
-    if (!fs.existsSync(filePath)) return res.status(404).send("Not found");
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).send("Not found");
+    }
+
     return res.download(filePath);
   } catch (error) {
-    return handleError(res, error);
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
