@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
+const axios = require("axios");
 
 const athleteRoutes = require("./routes/athletes");
 const jobRoutes = require("./routes/jobs");
@@ -23,26 +24,68 @@ app.use("/api/jobs", jobRoutes);
 app.use("/api/users", userRoutes);
 
 app.get("/api/dashboard", authMiddleware, (req, res) => {
-  res.json({ msg: "Protected dashboard", uid: req.userUid, role: req.userRole });
+  res.json({
+    msg: "Protected dashboard",
+    uid: req.userUid,
+    role: req.userRole,
+  });
 });
 
 app.get("/health", (req, res) => {
   const mongoState = mongoose.connection.readyState;
-  const mongoReady = mongoState === 1;
 
   res.json({
     status: "ok",
     service: "khel-khoj-node-api",
     mongodb: {
-      ready: mongoReady,
+      ready: mongoState === 1,
       state: mongoState,
     },
     fastapi_url: process.env.FASTAPI_BASE_URL || "http://localhost:8000",
   });
 });
 
+/* ---------- FASTAPI CONNECTIVITY TEST ---------- */
+
+app.get("/test-fastapi", async (req, res) => {
+  const url = `${process.env.FASTAPI_BASE_URL}/health`;
+
+  try {
+    console.log("Testing FastAPI:", url);
+
+    const response = await axios.get(url);
+
+    return res.json({
+      success: true,
+      url,
+      data: response.data,
+    });
+  } catch (err) {
+    console.error("FASTAPI TEST FAILED");
+    console.error(err);
+
+    return res.status(500).json({
+      success: false,
+      url,
+      message: err.message,
+      code: err.code,
+      status: err.response?.status,
+      data:
+        typeof err.response?.data === "object"
+          ? err.response.data
+          : err.response?.data,
+    });
+  }
+});
+
+/* ----------------------------------------------- */
+
 app.get("/", (req, res) => {
-  res.json({ msg: "Hello World", docs: "/health" });
+  res.json({
+    msg: "Hello World",
+    docs: "/health",
+    test: "/test-fastapi",
+  });
 });
 
 function hasValidMongoUri(uri) {
@@ -55,7 +98,9 @@ function hasValidMongoUri(uri) {
 
 async function connectMongoIfConfigured() {
   if (!hasValidMongoUri(MONGODB_URI)) {
-    console.log("⚠️  MongoDB URI not configured. Athlete endpoints will return 503.");
+    console.log(
+      "⚠️ MongoDB URI not configured. Athlete endpoints will return 503."
+    );
     return;
   }
 
