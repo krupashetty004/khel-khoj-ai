@@ -80,7 +80,10 @@ try {
 
 } catch (err) {
   console.error("========== FASTAPI REQUEST FAILED ==========");
+  console.error(err);
+
   console.error("Message:", err.message);
+  console.error("Code:", err.code);
 
   if (err.response) {
     console.error("Status:", err.response.status);
@@ -90,6 +93,8 @@ try {
   if (err.request) {
     console.error("No response received from FastAPI");
   }
+
+  console.error("Stack:", err.stack);
 
   throw err;
 }
